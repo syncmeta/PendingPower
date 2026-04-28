@@ -9,11 +9,15 @@ final class StatusBarController {
     private let otherItem = NSMenuItem(title: "Other —", action: nil, keyEquivalent: "")
     private let totalItem = NSMenuItem(title: "Total —", action: nil, keyEquivalent: "")
 
+    private static let fixedWidth: CGFloat = 48
+
     init() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem = NSStatusBar.system.statusItem(withLength: Self.fixedWidth)
         if let button = statusItem.button {
-            button.title = "… W"
             button.font = NSFont.monospacedDigitSystemFont(ofSize: 0, weight: .regular)
+            button.alignment = .right
+            button.wantsLayer = true
+            button.attributedTitle = Self.attributed("… W")
         }
 
         for item in [cpuItem, gpuItem, aneItem, otherItem] { menu.addItem(item) }
@@ -27,12 +31,12 @@ final class StatusBarController {
     }
 
     func showError(_ message: String) {
-        statusItem.button?.title = "—"
+        setTitle(Self.attributed("—"))
         totalItem.title = message
     }
 
     func update(_ r: PowerReading) {
-        statusItem.button?.title = Self.formatTotal(r.total)
+        setTitle(Self.attributed(Self.formatTotal(r.total)))
         cpuItem.title = String(format: "CPU   %.2f W", r.cpu)
         gpuItem.title = String(format: "GPU   %.2f W", r.gpu)
         aneItem.title = String(format: "ANE   %.2f W", r.ane)
@@ -52,6 +56,25 @@ final class StatusBarController {
         } else {
             return String(format: "%.0f W", watts)
         }
+    }
+
+    private func setTitle(_ s: NSAttributedString) {
+        guard let button = statusItem.button else { return }
+        if button.attributedTitle.string == s.string { return }
+        let fade = CATransition()
+        fade.type = .fade
+        fade.duration = 0.25
+        button.layer?.add(fade, forKey: "fade")
+        button.attributedTitle = s
+    }
+
+    private static func attributed(_ s: String) -> NSAttributedString {
+        let p = NSMutableParagraphStyle()
+        p.alignment = .right
+        return NSAttributedString(string: s, attributes: [
+            .font: NSFont.monospacedDigitSystemFont(ofSize: 0, weight: .regular),
+            .paragraphStyle: p,
+        ])
     }
 
     @objc private func quitApp() {

@@ -6,7 +6,6 @@ struct PowerReading {
     var gpu: Double = 0
     var ane: Double = 0
     var other: Double = 0
-
     var total: Double { cpu + gpu + ane + other }
 }
 
