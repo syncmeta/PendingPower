@@ -1,5 +1,8 @@
 # PendingPower
 
+> 以下内容暂时由 Claude 撰写。
+> The following content was written by Claude for now.
+
 [English](#english) · [中文](#中文)
 
 ---
