@@ -2,12 +2,13 @@
   <img src="docs/app-icon.png" width="128" alt="PendingPower 应用图标" />
 </p>
 <h1 align="center">PendingPower</h1>
-
 <p align="center">
   macOS menu bar app showing real-time system power
   <br />
   Mac 菜单栏显示实时功率的工具
 </p>
+
+
 
 
 <p align="center">
@@ -17,14 +18,13 @@
   <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.1-informational" /></a>
 </p>
 
-<p align="center"><b>Apple Silicon Only</b></p>
 
 <p align="center">
   <img src="assets/screenshot.png" width="420" alt="菜单栏里的总功率，以及展开后的 CPU / GPU / ANE / Other 分项" />
 </p>
 
 
----
+
 
 ### 下载 / Download
 
@@ -34,11 +34,15 @@ M 芯片 Mac，并且系统版本在 macOS 13 或以上 就能用
 
 Requires an Apple Silicon Mac running macOS 13 or later.
 
+
+
 ## 原理 / How
 
 通过 Apple 私有的 `IOReport` 框架读取 SoC 能量计数器
 
 Reads SoC energy counters through Apple’s private `IOReport` framework.
+
+
 
 ### 仓库结构
 
@@ -52,6 +56,8 @@ Resources/                    Info.plist、entitlements、AppIcon.icns
 scripts/                      build.sh · build-dmg.sh · make-icon.swift · smoke.swift
 ```
 
+
+
 ### Repository layout
 
 ```
@@ -63,6 +69,8 @@ Sources/PendingPower/
 Resources/                    Info.plist, entitlements, AppIcon.icns
 scripts/                      build.sh · build-dmg.sh · make-icon.swift · smoke.swift
 ```
+
+
 
 ### 许可 / License
 
