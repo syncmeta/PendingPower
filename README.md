@@ -13,6 +13,7 @@
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%2013%2B%20%C2%B7%20Apple%20Silicon-lightgrey" />
   <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.4-informational" /></a>
 </p>
+
 ![PendingPower 菜单栏截图](docs/menu-screenshot.png)
 
 ### 下载 / Download
