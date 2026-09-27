@@ -14,7 +14,9 @@
   <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.4-informational" /></a>
 </p>
 
-![PendingPower 菜单栏截图](docs/menu-screenshot.png)
+<p align="center">
+  <img src="docs/menu-screenshot.png" alt="PendingPower 菜单栏截图" />
+</p>
 
 ### 下载 / Download
 
