@@ -1,4 +1,5 @@
 import AppKit
+import Sparkle
 
 final class StatusBarController {
     private let statusItem: NSStatusItem
@@ -11,8 +12,10 @@ final class StatusBarController {
 
     private static let fixedWidth: CGFloat = 48
 
-    init() {
+    init(updaterController: SPUStandardUpdaterController) {
         statusItem = NSStatusBar.system.statusItem(withLength: Self.fixedWidth)
+        statusItem.autosaveName = "PendingPower-Watts"
+        statusItem.isVisible = true
         if let button = statusItem.button {
             button.font = NSFont.monospacedDigitSystemFont(ofSize: 0, weight: .regular)
             button.alignment = .right
@@ -23,6 +26,10 @@ final class StatusBarController {
         for item in [cpuItem, gpuItem, aneItem, otherItem] { menu.addItem(item) }
         menu.addItem(.separator())
         menu.addItem(totalItem)
+        menu.addItem(.separator())
+        let checkUpdates = NSMenuItem(title: "检查更新…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
+        checkUpdates.target = updaterController
+        menu.addItem(checkUpdates)
         menu.addItem(.separator())
         let quit = NSMenuItem(title: "退出 PendingPower", action: #selector(quitApp), keyEquivalent: "q")
         quit.target = self

@@ -1,11 +1,15 @@
 import AppKit
+import Sparkle
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBar: StatusBarController!
     private var monitor: PowerMonitor?
+    private let updaterController = SPUStandardUpdaterController(
+        startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        statusBar = StatusBarController()
+        statusBar = StatusBarController(updaterController: updaterController)
+        updaterController.startUpdater()
 
         guard let m = PowerMonitor.make() else {
             statusBar.showError("无法读取功耗(IOReport 不可用)")

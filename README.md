@@ -15,7 +15,7 @@
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue" /></a>
   <img alt="Swift" src="https://img.shields.io/badge/lang-Swift-F05138?logo=swift&logoColor=white" />
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%2013%2B%20%C2%B7%20Apple%20Silicon-lightgrey" />
-  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.2-informational" /></a>
+  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.3-informational" /></a>
 </p>
 
 
@@ -33,6 +33,10 @@
 M 芯片 Mac，并且系统版本在 macOS 13 或以上 就能用
 
 Requires an Apple Silicon Mac running macOS 13 or later.
+
+从 v1.0.3 起，应用通过 Sparkle 自动检查签名更新。发现新版时由用户确认安装；菜单里也可以手动选择“检查更新…”。旧版没有更新器，升级到 v1.0.3 需要手动安装一次。
+
+Starting with v1.0.3, the app checks for signed updates with Sparkle. Installation is confirmed by the user. Earlier versions require one manual upgrade.
 
 
 
