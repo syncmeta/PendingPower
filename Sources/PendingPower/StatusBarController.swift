@@ -72,7 +72,13 @@ final class StatusBarController {
     }
 
     @objc private func showAbout() {
+        let url = URL(string: "https://github.com/syncmeta/PendingPower")!
+        let link = NSAttributedString(string: "github.com/syncmeta/PendingPower", attributes: [
+            .link: url,
+            .foregroundColor: NSColor.linkColor,
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+        ])
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.orderFrontStandardAboutPanel(nil)
+        NSApp.orderFrontStandardAboutPanel(options: [.credits: link])
     }
 }

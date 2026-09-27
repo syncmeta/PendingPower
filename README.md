@@ -30,9 +30,9 @@ Requires an Apple Silicon Mac running macOS 13 or later.
 
 Starting with v1.0.3, the app checks for signed updates with Sparkle. Installation is confirmed by the user. Earlier versions require one manual upgrade.
 
-v1.0.4 起仅显示 AppleSMC `PSTR` 系统功率。菜单只有“检查更新… / 退出 / 关于”，提供简体中文与英文，跟随 macOS 的应用语言设置。无法读取 `PSTR` 时显示 `— W`。
+v1.0.4 起仅显示 AppleSMC `PSTR` 系统功率。菜单只有“检查更新… / 退出 / 关于”，关于窗口提供 GitHub 仓库链接。提供简体中文与英文，跟随 macOS 的应用语言设置。无法读取 `PSTR` 时显示 `— W`。
 
-Starting with v1.0.4, PendingPower shows only AppleSMC `PSTR` system power. The menu contains Check for Updates, Quit, and About. It follows the macOS app language setting in Simplified Chinese or English. An unavailable `PSTR` reading appears as `— W`.
+Starting with v1.0.4, PendingPower shows only AppleSMC `PSTR` system power. The menu contains Check for Updates, Quit, and About; the About window links to the GitHub repository. It follows the macOS app language setting in Simplified Chinese or English. An unavailable `PSTR` reading appears as `— W`.
 
 
 

@@ -38,8 +38,6 @@
     <string>13.0</string>
     <key>LSUIElement</key>
     <true/>
-    <key>NSHumanReadableCopyright</key>
-    <string>© 2026</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSSupportsAutomaticTermination</key>
