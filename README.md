@@ -15,16 +15,8 @@
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue" /></a>
   <img alt="Swift" src="https://img.shields.io/badge/lang-Swift-F05138?logo=swift&logoColor=white" />
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%2013%2B%20%C2%B7%20Apple%20Silicon-lightgrey" />
-  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.3-informational" /></a>
+  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.4-informational" /></a>
 </p>
-
-
-<p align="center">
-  <img src="assets/screenshot.png" width="420" alt="菜单栏里的总功率，以及展开后的 CPU / GPU / ANE / Other 分项" />
-</p>
-
-
-
 
 ### 下载 / Download
 
@@ -38,13 +30,17 @@ Requires an Apple Silicon Mac running macOS 13 or later.
 
 Starting with v1.0.3, the app checks for signed updates with Sparkle. Installation is confirmed by the user. Earlier versions require one manual upgrade.
 
+v1.0.4 起仅显示 AppleSMC `PSTR` 系统功率。菜单只有“检查更新… / 退出 / 关于”，提供简体中文与英文，跟随 macOS 的应用语言设置。无法读取 `PSTR` 时显示 `— W`。
+
+Starting with v1.0.4, PendingPower shows only AppleSMC `PSTR` system power. The menu contains Check for Updates, Quit, and About. It follows the macOS app language setting in Simplified Chinese or English. An unavailable `PSTR` reading appears as `— W`.
+
 
 
 ## 原理 / How
 
-菜单栏优先显示 AppleSMC `PSTR` 整机功率；CPU / GPU / ANE 分项来自 Apple 私有的 `IOReport` 框架。如果系统不再提供有效的分项计数器，分项显示为 `—`，不会把仅剩的 GPU 读数误当作整机功率。整机功率不等于插座输入功率。
+菜单栏显示 AppleSMC `PSTR` 系统功率，不使用 IOReport。这个内部功率读数不等于插座输入功率；`PSTR` 是未公开的硬件传感器键，某些机型可能没有提供。
 
-The menu bar uses AppleSMC `PSTR` for system rail power. CPU / GPU / ANE details come from the private `IOReport` framework. Unavailable component counters are shown as `—`; the remaining GPU reading is never presented as total system power. System rail power is not wall input power.
+The menu bar reads AppleSMC `PSTR` system rail power without IOReport. This internal reading is not wall input power. `PSTR` is an undocumented hardware sensor key and may be unavailable on some Macs.
 
 
 
@@ -52,9 +48,8 @@ The menu bar uses AppleSMC `PSTR` for system rail power. CPU / GPU / ANE details
 
 ```
 Sources/PendingPower/
-├── IOReportBridge.swift      私有 IOReport.framework，运行时用 dlsym 解符号
 ├── SMCPowerReader.swift      读取 AppleSMC PSTR 整机功率
-├── PowerMonitor.swift        采样能量计数器，换算成瓦
+├── PowerMonitor.swift        定时采样 PSTR
 ├── StatusBarController.swift 菜单栏项和它的菜单
 └── main.swift                NSApplicationDelegate，把上面两块接起来
 Resources/                    Info.plist、entitlements、AppIcon.icns
@@ -67,9 +62,8 @@ scripts/                      build.sh · build-dmg.sh · make-icon.swift · smo
 
 ```
 Sources/PendingPower/
-├── IOReportBridge.swift      private IOReport.framework, resolved via dlsym at runtime
 ├── SMCPowerReader.swift      reads AppleSMC PSTR system rail power
-├── PowerMonitor.swift        samples the energy counters, turns them into watts
+├── PowerMonitor.swift        samples PSTR on a timer
 ├── StatusBarController.swift the menu bar item and its menu
 └── main.swift                NSApplicationDelegate, wires the two together
 Resources/                    Info.plist, entitlements, AppIcon.icns

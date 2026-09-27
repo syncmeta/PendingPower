@@ -11,12 +11,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBar = StatusBarController(updaterController: updaterController)
         updaterController.startUpdater()
 
-        guard let m = PowerMonitor.make() else {
-            statusBar.showError("无法读取功耗(IOReport 不可用)")
+        guard let m = PowerMonitor() else {
+            NSLog("PendingPower: AppleSMC unavailable")
+            statusBar.update(nil)
             return
         }
-        m.onUpdate = { [weak self] reading in
-            self?.statusBar.update(reading)
+        m.onUpdate = { [weak self] watts in
+            self?.statusBar.update(watts)
         }
         m.start(interval: 1.0)
         monitor = m

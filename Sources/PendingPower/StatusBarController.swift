@@ -4,11 +4,6 @@ import Sparkle
 final class StatusBarController {
     private let statusItem: NSStatusItem
     private let menu = NSMenu()
-    private let cpuItem = NSMenuItem(title: "CPU —", action: nil, keyEquivalent: "")
-    private let gpuItem = NSMenuItem(title: "GPU —", action: nil, keyEquivalent: "")
-    private let aneItem = NSMenuItem(title: "ANE —", action: nil, keyEquivalent: "")
-    private let otherItem = NSMenuItem(title: "Other —", action: nil, keyEquivalent: "")
-    private let totalItem = NSMenuItem(title: "Total —", action: nil, keyEquivalent: "")
 
     private static let fixedWidth: CGFloat = 48
 
@@ -23,43 +18,20 @@ final class StatusBarController {
             button.attributedTitle = Self.attributed("… W")
         }
 
-        for item in [cpuItem, gpuItem, aneItem, otherItem] { menu.addItem(item) }
-        menu.addItem(.separator())
-        menu.addItem(totalItem)
-        menu.addItem(.separator())
-        let checkUpdates = NSMenuItem(title: "检查更新…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
+        let checkUpdates = NSMenuItem(title: NSLocalizedString("menu.checkUpdates", comment: "Check for updates menu item"), action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
         checkUpdates.target = updaterController
         menu.addItem(checkUpdates)
-        menu.addItem(.separator())
-        let quit = NSMenuItem(title: "退出 PendingPower", action: #selector(quitApp), keyEquivalent: "q")
+        let quit = NSMenuItem(title: NSLocalizedString("menu.quit", comment: "Quit menu item"), action: #selector(quitApp), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
+        let about = NSMenuItem(title: NSLocalizedString("menu.about", comment: "About menu item"), action: #selector(showAbout), keyEquivalent: "")
+        about.target = self
+        menu.addItem(about)
         statusItem.menu = menu
     }
 
-    func showError(_ message: String) {
-        setTitle(Self.attributed("—"))
-        totalItem.title = message
-    }
-
-    func update(_ r: PowerReading) {
-        guard let total = r.total else {
-            showError("功率传感器无有效读数")
-            return
-        }
-        setTitle(Self.attributed(Self.formatTotal(total)))
-        if r.breakdownAvailable {
-            cpuItem.title = String(format: "CPU   %.2f W", r.cpu)
-            gpuItem.title = String(format: "GPU   %.2f W", r.gpu)
-            aneItem.title = String(format: "ANE   %.2f W", r.ane)
-            otherItem.title = String(format: "Other %.2f W", r.other)
-        } else {
-            cpuItem.title = "CPU   —"
-            gpuItem.title = "GPU   —"
-            aneItem.title = "ANE   —"
-            otherItem.title = "Other —"
-        }
-        totalItem.title = String(format: "%@ %.2f W", r.system != nil ? "System (SMC)" : "SoC (IOReport)", total)
+    func update(_ watts: Double?) {
+        setTitle(Self.attributed(watts.map(Self.formatTotal) ?? "— W"))
     }
 
     private static func formatTotal(_ watts: Double) -> String {
@@ -97,5 +69,10 @@ final class StatusBarController {
 
     @objc private func quitApp() {
         NSApp.terminate(nil)
+    }
+
+    @objc private func showAbout() {
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.orderFrontStandardAboutPanel(nil)
     }
 }

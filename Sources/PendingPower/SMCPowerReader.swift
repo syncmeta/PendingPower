@@ -1,8 +1,7 @@
 import Foundation
 import IOKit
 
-// AppleSMC's PSTR key reports system rail power in watts. It is independent
-// of IOReport's Energy Model, whose channels can disappear across OS updates.
+// AppleSMC's PSTR key reports internal system rail power in watts.
 final class SMCPowerReader {
     private var connection: io_connect_t = 0
     private static let key: UInt32 = 0x50535452 // PSTR

@@ -46,6 +46,9 @@ ditto "$BIN_PATH/Sparkle.framework" "$APP_DIR/Contents/Frameworks/Sparkle.framew
 if [[ -f "$ROOT/Resources/AppIcon.icns" ]]; then
     ditto "$ROOT/Resources/AppIcon.icns" "$APP_DIR/Contents/Resources/AppIcon.icns"
 fi
+for language in en zh-Hans; do
+    ditto "$ROOT/Resources/$language.lproj" "$APP_DIR/Contents/Resources/$language.lproj"
+done
 
 # Belt-and-braces: strip any extended attributes anyway.
 xattr -cr "$APP_DIR"

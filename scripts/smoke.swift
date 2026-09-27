@@ -1,22 +1,16 @@
 import Foundation
 
-// Quick smoke test: sample the same IOReport and SMC sources as the app.
-// Compile this file as main.swift together with the three monitor source files.
-
-let monitor = PowerMonitor.make()
-guard let m = monitor else {
-    print("FAIL: PowerMonitor.make returned nil")
+// Compile as main.swift together with SMCPowerReader.swift to probe PSTR.
+guard let reader = SMCPowerReader() else {
+    print("FAIL: AppleSMC unavailable")
     exit(1)
 }
 
-var ticks = 0
-m.onUpdate = { r in
-    ticks += 1
-    let total = r.total.map { String(format: "%.2fW", $0) } ?? "unavailable"
-    print(String(format: "tick %d  total=%@  cpu=%.2f gpu=%.2f ane=%.2f other=%.2f breakdown=%@",
-                 ticks, total, r.cpu, r.gpu, r.ane, r.other,
-                 r.breakdownAvailable ? "available" : "unavailable"))
-    if ticks >= 3 { exit(0) }
+for sample in 1...3 {
+    guard let watts = reader.readWatts() else {
+        print("FAIL: PSTR unavailable")
+        exit(1)
+    }
+    print(String(format: "sample %d  system=%.2f W", sample, watts))
+    if sample < 3 { Thread.sleep(forTimeInterval: 1) }
 }
-m.start(interval: 1.0)
-RunLoop.main.run()
