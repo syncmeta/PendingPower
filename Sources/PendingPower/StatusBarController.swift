@@ -36,12 +36,23 @@ final class StatusBarController {
     }
 
     func update(_ r: PowerReading) {
-        setTitle(Self.attributed(Self.formatTotal(r.total)))
-        cpuItem.title = String(format: "CPU   %.2f W", r.cpu)
-        gpuItem.title = String(format: "GPU   %.2f W", r.gpu)
-        aneItem.title = String(format: "ANE   %.2f W", r.ane)
-        otherItem.title = String(format: "Other %.2f W", r.other)
-        totalItem.title = String(format: "Total %.2f W", r.total)
+        guard let total = r.total else {
+            showError("功率传感器无有效读数")
+            return
+        }
+        setTitle(Self.attributed(Self.formatTotal(total)))
+        if r.breakdownAvailable {
+            cpuItem.title = String(format: "CPU   %.2f W", r.cpu)
+            gpuItem.title = String(format: "GPU   %.2f W", r.gpu)
+            aneItem.title = String(format: "ANE   %.2f W", r.ane)
+            otherItem.title = String(format: "Other %.2f W", r.other)
+        } else {
+            cpuItem.title = "CPU   —"
+            gpuItem.title = "GPU   —"
+            aneItem.title = "ANE   —"
+            otherItem.title = "Other —"
+        }
+        totalItem.title = String(format: "%@ %.2f W", r.system != nil ? "System (SMC)" : "SoC (IOReport)", total)
     }
 
     private static func formatTotal(_ watts: Double) -> String {

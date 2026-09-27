@@ -1,8 +1,7 @@
 import Foundation
 
-// Quick smoke test: load IOReport via the same bridge the app uses,
-// take two samples 1 second apart, print derived watts.
-// Run from project root: swift scripts/smoke.swift Sources/PendingPower/IOReportBridge.swift Sources/PendingPower/PowerMonitor.swift
+// Quick smoke test: sample the same IOReport and SMC sources as the app.
+// Compile this file as main.swift together with the three monitor source files.
 
 let monitor = PowerMonitor.make()
 guard let m = monitor else {
@@ -13,8 +12,10 @@ guard let m = monitor else {
 var ticks = 0
 m.onUpdate = { r in
     ticks += 1
-    print(String(format: "tick %d  total=%.2fW  cpu=%.2f gpu=%.2f ane=%.2f other=%.2f",
-                 ticks, r.total, r.cpu, r.gpu, r.ane, r.other))
+    let total = r.total.map { String(format: "%.2fW", $0) } ?? "unavailable"
+    print(String(format: "tick %d  total=%@  cpu=%.2f gpu=%.2f ane=%.2f other=%.2f breakdown=%@",
+                 ticks, total, r.cpu, r.gpu, r.ane, r.other,
+                 r.breakdownAvailable ? "available" : "unavailable"))
     if ticks >= 3 { exit(0) }
 }
 m.start(interval: 1.0)

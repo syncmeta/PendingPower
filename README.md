@@ -15,7 +15,7 @@
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue" /></a>
   <img alt="Swift" src="https://img.shields.io/badge/lang-Swift-F05138?logo=swift&logoColor=white" />
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%2013%2B%20%C2%B7%20Apple%20Silicon-lightgrey" />
-  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.1-informational" /></a>
+  <a href="https://github.com/syncmeta/PendingPower/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.0.2-informational" /></a>
 </p>
 
 
@@ -38,9 +38,9 @@ Requires an Apple Silicon Mac running macOS 13 or later.
 
 ## 原理 / How
 
-通过 Apple 私有的 `IOReport` 框架读取 SoC 能量计数器
+菜单栏优先显示 AppleSMC `PSTR` 整机功率；CPU / GPU / ANE 分项来自 Apple 私有的 `IOReport` 框架。如果系统不再提供有效的分项计数器，分项显示为 `—`，不会把仅剩的 GPU 读数误当作整机功率。整机功率不等于插座输入功率。
 
-Reads SoC energy counters through Apple’s private `IOReport` framework.
+The menu bar uses AppleSMC `PSTR` for system rail power. CPU / GPU / ANE details come from the private `IOReport` framework. Unavailable component counters are shown as `—`; the remaining GPU reading is never presented as total system power. System rail power is not wall input power.
 
 
 
@@ -49,6 +49,7 @@ Reads SoC energy counters through Apple’s private `IOReport` framework.
 ```
 Sources/PendingPower/
 ├── IOReportBridge.swift      私有 IOReport.framework，运行时用 dlsym 解符号
+├── SMCPowerReader.swift      读取 AppleSMC PSTR 整机功率
 ├── PowerMonitor.swift        采样能量计数器，换算成瓦
 ├── StatusBarController.swift 菜单栏项和它的菜单
 └── main.swift                NSApplicationDelegate，把上面两块接起来
@@ -63,6 +64,7 @@ scripts/                      build.sh · build-dmg.sh · make-icon.swift · smo
 ```
 Sources/PendingPower/
 ├── IOReportBridge.swift      private IOReport.framework, resolved via dlsym at runtime
+├── SMCPowerReader.swift      reads AppleSMC PSTR system rail power
 ├── PowerMonitor.swift        samples the energy counters, turns them into watts
 ├── StatusBarController.swift the menu bar item and its menu
 └── main.swift                NSApplicationDelegate, wires the two together

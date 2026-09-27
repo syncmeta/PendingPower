@@ -6,15 +6,19 @@ struct PowerReading {
     var gpu: Double = 0
     var ane: Double = 0
     var other: Double = 0
-    var total: Double { cpu + gpu + ane + other }
+    var system: Double?
+    var breakdownAvailable = false
+    var total: Double? { system ?? (breakdownAvailable ? cpu + gpu + ane + other : nil) }
 }
 
 final class PowerMonitor {
     private let bridge: IOReportBridge
+    private let systemPower = SMCPowerReader()
     private let sub: IOReportSubscriptionRef
     private let subbed: CFMutableDictionary
     private var lastSample: CFDictionary
     private var lastSampleTime: CFAbsoluteTime
+    private var validBreakdownStreak = 0
     private var timer: Timer?
 
     var onUpdate: ((PowerReading) -> Void)?
@@ -76,6 +80,7 @@ final class PowerMonitor {
         lastSampleTime = nowTime
 
         var reading = PowerReading()
+        var hasActiveEnergyCounters = false
 
         // The delta dictionary nests channel arrays. IOReportIterate walks each
         // channel sample, and the per-channel integer is energy accumulated
@@ -89,6 +94,13 @@ final class PowerMonitor {
             let name = (bridge.channelName(ch) ?? "").lowercased()
             let subgroup = (bridge.channelSubGroup(ch) ?? "").lowercased()
             let bucket = name + " " + subgroup
+
+            // A working Energy Model has changing mJ SoC counters. On some
+            // macOS versions every one of them stays at zero while the nJ GPU
+            // counter still changes; that is not a valid component breakdown.
+            if unit.lowercased().contains("mj") && energy > 0 {
+                hasActiveEnergyCounters = true
+            }
 
             if bucket.contains("ane") {
                 reading.ane += watts
@@ -108,6 +120,9 @@ final class PowerMonitor {
         reading.gpu = max(reading.gpu, 0)
         reading.ane = max(reading.ane, 0)
         reading.other = max(reading.other, 0)
+        reading.system = systemPower?.readWatts()
+        validBreakdownStreak = hasActiveEnergyCounters ? min(validBreakdownStreak + 1, 3) : 0
+        reading.breakdownAvailable = validBreakdownStreak == 3
 
         let snapshot = reading
         DispatchQueue.main.async { [weak self] in
