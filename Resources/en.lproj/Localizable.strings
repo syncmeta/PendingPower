@@ -1,3 +1,9 @@
 "menu.checkUpdates" = "Check for Updates…";
 "menu.quit" = "Quit";
 "menu.about" = "About";
+"menu.launchAtLogin" = "Launch at Login";
+"login.approvalTitle" = "Allow Launch at Login";
+"login.approvalMessage" = "Allow PendingPower in System Settings → General → Login Items. A dash in the menu means approval is pending; click it to cancel launch at login.";
+"login.openSettings" = "Open System Settings";
+"login.cancel" = "Cancel";
+"login.errorTitle" = "Couldn’t Change Launch at Login";

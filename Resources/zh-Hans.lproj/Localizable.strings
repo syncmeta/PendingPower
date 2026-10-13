@@ -1,3 +1,9 @@
 "menu.checkUpdates" = "检查更新…";
 "menu.quit" = "退出";
 "menu.about" = "关于";
+"menu.launchAtLogin" = "开机自启";
+"login.approvalTitle" = "允许开机自启";
+"login.approvalMessage" = "请在系统设置 → 通用 → 登录项中允许 PendingPower。菜单中的横线表示等待系统批准；再次点击可取消自启。";
+"login.openSettings" = "打开系统设置";
+"login.cancel" = "取消";
+"login.errorTitle" = "无法更改开机自启设置";

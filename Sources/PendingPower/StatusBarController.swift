@@ -1,14 +1,17 @@
 import AppKit
 import Sparkle
+import ServiceManagement
 
-final class StatusBarController {
+final class StatusBarController: NSObject, NSMenuDelegate {
     private let statusItem: NSStatusItem
     private let menu = NSMenu()
+    private let launchAtLogin = NSMenuItem(title: NSLocalizedString("menu.launchAtLogin", comment: "Launch at login"), action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
 
     private static let fixedWidth: CGFloat = 48
 
     init(updaterController: SPUStandardUpdaterController) {
         statusItem = NSStatusBar.system.statusItem(withLength: Self.fixedWidth)
+        super.init()
         statusItem.autosaveName = "PendingPower-Watts"
         statusItem.isVisible = true
         if let button = statusItem.button {
@@ -18,6 +21,11 @@ final class StatusBarController {
             button.attributedTitle = Self.attributed("… W")
         }
 
+        launchAtLogin.target = self
+        menu.addItem(launchAtLogin)
+        menu.addItem(.separator())
+        menu.delegate = self
+        refreshLaunchAtLogin()
         let checkUpdates = NSMenuItem(title: NSLocalizedString("menu.checkUpdates", comment: "Check for updates menu item"), action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
         checkUpdates.target = updaterController
         menu.addItem(checkUpdates)
@@ -31,26 +39,54 @@ final class StatusBarController {
     }
 
     func update(_ watts: Double?) {
-        setTitle(Self.attributed(watts.map(Self.formatTotal) ?? "— W"))
+        setTitle(Self.attributed(watts.map(PowerDisplay.format) ?? "— W"))
     }
 
-    private static func formatTotal(_ watts: Double) -> String {
-        // <10 W  → 2 decimals (e.g. "8.34 W")
-        // 10–99  → 1 decimal  (e.g. "23.4 W")
-        // ≥100   → integer    (e.g. "147 W")
-        let abs = Swift.abs(watts)
-        if abs < 10 {
-            return String(format: "%.2f W", watts)
-        } else if abs < 100 {
-            return String(format: "%.1f W", watts)
-        } else {
-            return String(format: "%.0f W", watts)
+    func menuWillOpen(_ menu: NSMenu) {
+        refreshLaunchAtLogin()
+    }
+
+    private func refreshLaunchAtLogin() {
+        switch SMAppService.mainApp.status {
+        case .enabled: launchAtLogin.state = .on
+        case .requiresApproval: launchAtLogin.state = .mixed
+        default: launchAtLogin.state = .off
         }
+    }
+
+    @objc private func toggleLaunchAtLogin() {
+        let service = SMAppService.mainApp
+        do {
+            if service.status == .enabled || service.status == .requiresApproval {
+                try service.unregister()
+            } else {
+                try service.register()
+                if service.status == .requiresApproval {
+                    let alert = NSAlert()
+                    alert.messageText = NSLocalizedString("login.approvalTitle", comment: "Login approval required")
+                    alert.informativeText = NSLocalizedString("login.approvalMessage", comment: "Login approval instructions")
+                    alert.addButton(withTitle: NSLocalizedString("login.openSettings", comment: "Open System Settings"))
+                    alert.addButton(withTitle: NSLocalizedString("login.cancel", comment: "Cancel"))
+                    NSApp.activate(ignoringOtherApps: true)
+                    if alert.runModal() == .alertFirstButtonReturn {
+                        SMAppService.openSystemSettingsLoginItems()
+                    }
+                }
+            }
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = NSLocalizedString("login.errorTitle", comment: "Login setting error")
+            alert.informativeText = error.localizedDescription
+            NSApp.activate(ignoringOtherApps: true)
+            alert.runModal()
+        }
+        refreshLaunchAtLogin()
     }
 
     private func setTitle(_ s: NSAttributedString) {
         guard let button = statusItem.button else { return }
         if button.attributedTitle.string == s.string { return }
+        statusItem.length = max(Self.fixedWidth, ceil(s.size().width) + 12)
         let fade = CATransition()
         fade.type = .fade
         fade.duration = 0.25
@@ -73,7 +109,7 @@ final class StatusBarController {
 
     @objc private func showAbout() {
         let url = URL(string: "https://github.com/syncmeta/PendingPower")!
-        let link = NSAttributedString(string: "github.com/syncmeta/PendingPower", attributes: [
+        let link = NSAttributedString(string: "GitHub", attributes: [
             .link: url,
             .foregroundColor: NSColor.linkColor,
             .underlineStyle: NSUnderlineStyle.single.rawValue,
